@@ -16,13 +16,12 @@
 
 @property (nonatomic, assign) CGFloat cylinderAngle;
 @property (nonatomic, assign) CGPoint startPickingPosition;
-@property (nonatomic, strong) NSMutableArray *snappingPointArray;
+
+@property (nonatomic, assign) CGPoint startPosition;
 
 @end
 
 @implementation XBPageCurlView
-
-@dynamic cylinderAngle;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -136,30 +135,30 @@
     [self updateCylinderStateWithPoint:p animated:NO];
 }
 
-- (void)touchEndedAtPoint:(CGPoint)p
+- (void)touchEndedAtPoint:(CGPoint)p andCurlSuccess:(BOOL)success
 {
     if (self.snappingEnabled && self.snappingPointArray.count > 0) {
-        XBSnappingPoint *closestSnappingPoint = nil;
-        CGFloat d = FLT_MAX;
-        CGPoint v = CGPointMake(cosf(self.cylinderAngle), sinf(self.cylinderAngle));
+        XBSnappingPoint *closestSnappingPoint = self.snappingPointArray[0];
+        //CGFloat d = FLT_MAX;
+        //CGPoint v = CGPointMake(cosf(self.cylinderAngle), sinf(self.cylinderAngle));
         //Find the snapping point closest to the cylinder axis
-        for (XBSnappingPoint *snappingPoint in self.snappingPointArray) {
-            //Compute the distance between the snappingPoint.position and the cylinder axis weighted by the snapping point weight
-            CGFloat weightedSquareDistance = CGPointToLineDistance(snappingPoint.position, self.cylinderPosition, v) / snappingPoint.weight;
-            if (weightedSquareDistance < d) {
-                closestSnappingPoint = snappingPoint;
-                d = weightedSquareDistance;
-            }
-        }
-        
+//        for (XBSnappingPoint *snappingPoint in self.snappingPointArray) {
+//            //Compute the distance between the snappingPoint.position and the cylinder axis weighted by the snapping point weight
+//            CGFloat weightedSquareDistance = CGPointToLineDistance(snappingPoint.position, self.cylinderPosition, v) / snappingPoint.weight;
+//            if (weightedSquareDistance < d) {
+//                closestSnappingPoint = snappingPoint;
+//                d = weightedSquareDistance;
+//            }
+//        }
+        NSLog(@"closestSnappingPoint:%@",closestSnappingPoint);
         NSAssert(closestSnappingPoint != nil, @"There is always a closest point in a non-empty set of points hence closestSnappingPoint should not be nil.");
         
         [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewWillSnapToPointNotification object:self userInfo:@{kXBSnappingPointKey: closestSnappingPoint}];
-        
+        CGPoint endPosition = success?closestSnappingPoint.position:closestSnappingPoint.failPosition;
         __weak XBPageCurlView *weakSelf = self;
         CGFloat angle = CLAMP(closestSnappingPoint.angle, self.minimumCylinderAngle, self.maximumCylinderAngle);
-        [self setCylinderPosition:closestSnappingPoint.position cylinderAngle:angle cylinderRadius:closestSnappingPoint.radius animatedWithDuration:kDuration completion:^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewDidSnapToPointNotification object:weakSelf userInfo:@{kXBSnappingPointKey: closestSnappingPoint}];
+        [self setCylinderPosition:endPosition cylinderAngle:angle cylinderRadius:closestSnappingPoint.radius animatedWithDuration:kDuration completion:^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewDidSnapToPointNotification object:weakSelf userInfo:@{kXBSnappingPointKey: closestSnappingPoint,kXBCurlSuccessKey: @(success)}];
         }];
     }
 }
@@ -170,6 +169,7 @@
 {
     UITouch *touch = [touches anyObject];
     CGPoint p = [touch locationInView:self];
+    self.startPosition = p;
     [self touchBeganAtPoint:p];
 }
 
@@ -182,7 +182,7 @@
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     CGPoint p = [[touches anyObject] locationInView:self];
-    [self touchEndedAtPoint:p];
+    [self touchEndedAtPoint:p andCurlSuccess:CGPointToPointDistance(self.startPosition, p)];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
@@ -197,3 +197,6 @@
 NSString *const XBPageCurlViewWillSnapToPointNotification = @"XBPageCurlViewWillSnapToPointNotification";
 NSString *const XBPageCurlViewDidSnapToPointNotification = @"XBPageCurlViewDidSnapToPointNotification";
 NSString *const kXBSnappingPointKey = @"XBSnappingPointKey";
+NSString *const kXBCurlSuccessKey = @"XBCurlSuccessKey";
+NSString *const kXBCurlDirectionKey = @"XBCurlDirectionKey";
+

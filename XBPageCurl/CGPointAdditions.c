@@ -55,6 +55,14 @@ CGFloat CGPointToLineDistanceSq(CGPoint p, CGPoint q, CGPoint v)
     return dSq;
 }
 
+CGFloat CGPointToPointDistance(CGPoint start,CGPoint end) {
+    double distance;
+    CGFloat xDist = (end.x - start.x);
+    CGFloat yDist = (end.y - start.y);
+    distance = sqrt((xDist * xDist) + (yDist * yDist));
+    return distance;
+}
+
 CGPoint CGPointRotateCCW(CGPoint p)
 {
     return CGPointMake(-p.y, p.x);
@@ -74,7 +82,7 @@ bool CGPointIntersectSegments(CGPoint p0, CGPoint p1, CGPoint q0, CGPoint q1, CG
     CGPoint vp = CGPointRotateCCW(v);
     CGFloat uvp = CGPointDot(u, vp);
     
-    if (fabs(uvp) < EPSILON) { // Parallel lines
+    if (fabsf(uvp) < EPSILON) { // Parallel lines
         return false;
     }
     

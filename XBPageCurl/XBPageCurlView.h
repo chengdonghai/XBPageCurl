@@ -17,6 +17,7 @@
  */
 @interface XBPageCurlView : XBCurlView
 
+@property (nonatomic, strong) NSMutableArray *snappingPointArray;
 @property (nonatomic, assign) BOOL snappingEnabled;
 @property (nonatomic, assign) CGFloat minimumCylinderAngle;
 @property (nonatomic, assign) CGFloat maximumCylinderAngle;
@@ -24,7 +25,7 @@
 
 - (void)touchBeganAtPoint:(CGPoint)p;
 - (void)touchMovedToPoint:(CGPoint)p;
-- (void)touchEndedAtPoint:(CGPoint)p;
+- (void)touchEndedAtPoint:(CGPoint)p andCurlSuccess:(BOOL)success;
 - (void)addSnappingPoint:(XBSnappingPoint *)snappingPoint;
 - (void)addSnappingPointsFromArray:(NSArray *)snappingPoints;
 - (void)removeSnappingPoint:(XBSnappingPoint *)snappingPoint;
@@ -40,3 +41,5 @@
 extern NSString *const XBPageCurlViewWillSnapToPointNotification;
 extern NSString *const XBPageCurlViewDidSnapToPointNotification;
 extern NSString *const kXBSnappingPointKey;
+extern NSString *const kXBCurlSuccessKey;
+extern NSString *const kXBCurlDirectionKey;

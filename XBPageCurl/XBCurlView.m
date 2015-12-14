@@ -153,7 +153,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
         return NO;
     }
     
-    [self createVertexBufferWithXRes:(GLuint)self.horizontalResolution yRes:(GLuint)self.verticalResolution];
+    [self createVertexBufferWithXRes:self.horizontalResolution yRes:self.verticalResolution];
     [self createNextPageVertexBuffer];
     
     if (![self setupShaders]) {
@@ -271,12 +271,12 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 }
 
 - (void)setCylinderAngle:(CGFloat)cylinderAngle animatedWithDuration:(NSTimeInterval)duration
+
 {
     [self setCylinderAngle:cylinderAngle animatedWithDuration:duration completion:nil];
 }
 
-- (void)setCylinderAngle:(CGFloat)cylinderAngle animatedWithDuration:(NSTimeInterval)duration completion:(void (^)(void))completion
-{
+- (void)setCylinderAngle:(CGFloat)cylinderAngle animatedWithDuration:(NSTimeInterval)duration completion:(void (^)(void))completion{
     [self setCylinderAngle:cylinderAngle animatedWithDuration:duration interpolator:XBAnimationInterpolatorEaseInOut completion:completion];
 }
 
@@ -538,8 +538,6 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     free(vertices);
     
     elementCount = xRes*yRes*2*3;
-    assert(elementCount);
-    
     GLsizeiptr indicesSize = elementCount*sizeof(GLushort);//Two triangles per square, 3 indices per triangle
     GLushort *indices = malloc(indicesSize);
     
@@ -887,8 +885,8 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 
 - (void)drawImage:(UIImage *)image onTexture:(GLuint)texture flipHorizontal:(BOOL)flipHorizontal
 {
-    CGFloat width = CGImageGetWidth(image.CGImage);
-    CGFloat height = CGImageGetHeight(image.CGImage);
+    GLuint width = CGImageGetWidth(image.CGImage);
+    GLuint height = CGImageGetHeight(image.CGImage);
     
     [self drawOnTexture:texture width:width height:height drawBlock:^(CGContextRef context) {
         if (flipHorizontal) {
@@ -972,8 +970,8 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     
     if (backTexture == 0) {
         backTexture = [self generateTexture];
+        backTexture=2;
     }
-    
     [self drawView:view onTexture:backTexture flipHorizontal:YES];
 }
 
@@ -1066,7 +1064,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     CGContextDrawImage(context, r, backPageImage.CGImage);
     CGContextRestoreGState(context);  
     GLubyte *textureData = (GLubyte *)CGBitmapContextGetData(context);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
     CGContextRelease(context);
 }
 
@@ -1078,6 +1076,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     self.curlingView = view;
     CGRect frame = self.frame;
     
+    
     //Reset cylinder properties, positioning it on the right side, oriented vertically
     self.cylinderPosition = CGPointMake(frame.size.width, frame.size.height/2);
     self.cylinderAngle = M_PI_2;
@@ -1085,7 +1084,6 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     
     //Update the view drawn on the front of the curling page
     [self drawViewOnFrontOfPage:self.curlingView];
-    
     //Start the cylinder animation
     __weak XBCurlView *weakSelf = self;
     [self setCylinderPosition:cylinderPosition cylinderAngle:cylinderAngle cylinderRadius:cylinderRadius animatedWithDuration:duration completion:^{
@@ -1099,7 +1097,35 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     //Start the rendering loop
     [self startAnimating];
 }
-
+- (void)curlView:(UIView *)view cylinderPosition:(CGPoint)cylinderPosition startPosition:(CGPoint)startPosition cylinderAngle:(CGFloat)cylinderAngle cylinderRadius:(CGFloat)cylinderRadius animatedWithDuration:(NSTimeInterval)duration completion:(void (^)(void))completion
+{
+    self.curlingView = view;
+    
+    //Reset cylinder properties, positioning it on the right side, oriented vertically
+    self.cylinderPosition = startPosition;
+    self.cylinderAngle = M_PI_2;
+    self.cylinderRadius = 20;
+    
+    //Update the view drawn on the front of the curling page
+    [self drawViewOnFrontOfPage:self.curlingView];
+    //Start the cylinder animation
+    __weak XBCurlView *weakSelf = self;
+    [self setCylinderPosition:cylinderPosition cylinderAngle:cylinderAngle cylinderRadius:cylinderRadius animatedWithDuration:duration completion:^{
+        [weakSelf stopAnimating];
+        weakSelf.curlingView.hidden = NO;
+        [weakSelf removeFromSuperview];
+        if (completion) {
+            completion();
+        }
+    }];
+    
+    //Setup the view hierarchy properly
+    [self.curlingView.superview addSubview:self];
+    self.curlingView.hidden = YES;
+    
+    //Start the rendering loop
+    [self startAnimating];
+}
 - (void)uncurlAnimatedWithDuration:(NSTimeInterval)duration
 {
     [self uncurlAnimatedWithDuration:duration completion:nil];

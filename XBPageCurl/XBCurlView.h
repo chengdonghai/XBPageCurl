@@ -91,6 +91,7 @@
  * it afterwards. It adds and removes itself to/from the target view automatically.
  */
 - (void)curlView:(UIView *)view cylinderPosition:(CGPoint)cylinderPosition cylinderAngle:(CGFloat)cylinderAngle cylinderRadius:(CGFloat)cylinderRadius animatedWithDuration:(NSTimeInterval)duration;
+- (void)curlView:(UIView *)view cylinderPosition:(CGPoint)cylinderPosition startPosition:(CGPoint)startPosition cylinderAngle:(CGFloat)cylinderAngle cylinderRadius:(CGFloat)cylinderRadius animatedWithDuration:(NSTimeInterval)duration completion:(void (^)(void))completion;
 - (void)uncurlAnimatedWithDuration:(NSTimeInterval)duration;
 - (void)uncurlAnimatedWithDuration:(NSTimeInterval)duration completion:(void (^)(void))completion;
 

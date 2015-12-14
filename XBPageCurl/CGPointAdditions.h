@@ -56,7 +56,7 @@ CGPoint CGPointRotateCW(CGPoint p);
  */
 CGFloat CGPointToLineDistance(CGPoint p, CGPoint q, CGPoint v);
 CGFloat CGPointToLineDistanceSq(CGPoint p, CGPoint q, CGPoint v);
-
+CGFloat CGPointToPointDistance(CGPoint start,CGPoint end);
 /**
  * Computes the intersect between the two segments p0 - p1 and q0 - q1. Returns whether the segments intersect or not.
  * To get the intersection point pass the pointer of a CGPoint in the x parameter.

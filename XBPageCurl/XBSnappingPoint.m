@@ -12,19 +12,20 @@
 
 - (id)init
 {
-    return [self initWithPosition:CGPointZero angle:0 radius:0 weight:1];
+    return [self initWithPosition:CGPointZero failPosition:CGPointZero angle:0 radius:0 weight:1];
 }
 
-- (id)initWithPosition:(CGPoint)position angle:(CGFloat)angle radius:(CGFloat)radius
+- (id)initWithPosition:(CGPoint)position failPosition:(CGPoint)failPosition angle:(CGFloat)angle radius:(CGFloat)radius
 {
-    return [self initWithPosition:position angle:angle radius:radius weight:1];
+    return [self initWithPosition:position failPosition:failPosition angle:angle radius:radius weight:1];
 }
 
-- (id)initWithPosition:(CGPoint)position angle:(CGFloat)angle radius:(CGFloat)radius weight:(CGFloat)weight
+- (id)initWithPosition:(CGPoint)position failPosition:(CGPoint)failPosition angle:(CGFloat)angle radius:(CGFloat)radius weight:(CGFloat)weight
 {
     self = [super init];
     if (self) {
         self.position = position;
+        self.failPosition = failPosition;
         self.angle = angle;
         self.radius = radius;
         self.weight = weight;

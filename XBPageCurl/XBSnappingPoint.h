@@ -11,12 +11,13 @@
 @interface XBSnappingPoint : NSObject
 
 @property (nonatomic, assign) CGPoint position;
+@property (nonatomic, assign) CGPoint failPosition;
 @property (nonatomic, assign) CGFloat angle;
 @property (nonatomic, assign) CGFloat radius;
 @property (nonatomic, assign) CGFloat weight;
 @property (nonatomic, assign) int tag;
 
-- (id)initWithPosition:(CGPoint)position angle:(CGFloat)angle radius:(CGFloat)radius;
-- (id)initWithPosition:(CGPoint)position angle:(CGFloat)angle radius:(CGFloat)radius weight:(CGFloat)weight;
+- (id)initWithPosition:(CGPoint)position failPosition:(CGPoint)failPosition angle:(CGFloat)angle radius:(CGFloat)radius;
+- (id)initWithPosition:(CGPoint)position failPosition:(CGPoint)failPosition angle:(CGFloat)angle radius:(CGFloat)radius weight:(CGFloat)weight;
 
 @end
