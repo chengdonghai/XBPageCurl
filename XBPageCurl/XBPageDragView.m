@@ -732,43 +732,43 @@
     NSLog(@"endFlip pageIsCurled:%i",self.pageIsCurled);
 }
 
--(void)addObserverFor
-{
-    
-    RACSignal *curlViewDidEndSignal = [RACObserve(self, curlViewDidEnd) map:^id(NSNumber * value) {
-        return @((value != nil && value.boolValue));
-    }];
-    
-  
-    
-    RACSignal *curlViewDidLoadSignal = [RACObserve(self, curlViewDidLoad) map:^id(NSNumber * value) {
-        return @(value != nil && value.boolValue);
-    }];
-    
-    
-    RACSignal *combineSignal = [RACSignal combineLatest:@[curlViewDidEndSignal,curlViewDidLoadSignal] reduce:^id(NSNumber *value1,NSNumber *value2){
-        return @(value1.boolValue && value2.boolValue);
-    }];
-    
-    @weakify(self)
-    [combineSignal subscribeNext:^(NSNumber * x) {
-        @strongify(self)
-        if (x.boolValue) {
-            BookPageFlipAnimationType animationType = [self.dataSource XBPageDragViewPageFlipAnimationType:self];
-            if (animationType == BookPageFlipAnimationTypeMove) {
-                CGFloat moveX = self.touchPoint.x - _touchBeginPoint.x;
-
-                [self moveViewToEndX:moveX];
-                
-            } else {
-                [self cureViewToEndLocation:self.touchPoint];
-                
-            }
-        }
-    }];
-    
-    
-}
+//-(void)addObserverFor
+//{
+//    
+//    RACSignal *curlViewDidEndSignal = [RACObserve(self, curlViewDidEnd) map:^id(NSNumber * value) {
+//        return @((value != nil && value.boolValue));
+//    }];
+//    
+//  
+//    
+//    RACSignal *curlViewDidLoadSignal = [RACObserve(self, curlViewDidLoad) map:^id(NSNumber * value) {
+//        return @(value != nil && value.boolValue);
+//    }];
+//    
+//    
+//    RACSignal *combineSignal = [RACSignal combineLatest:@[curlViewDidEndSignal,curlViewDidLoadSignal] reduce:^id(NSNumber *value1,NSNumber *value2){
+//        return @(value1.boolValue && value2.boolValue);
+//    }];
+//    
+//    @weakify(self)
+//    [combineSignal subscribeNext:^(NSNumber * x) {
+//        @strongify(self)
+//        if (x.boolValue) {
+//            BookPageFlipAnimationType animationType = [self.dataSource XBPageDragViewPageFlipAnimationType:self];
+//            if (animationType == BookPageFlipAnimationTypeMove) {
+//                CGFloat moveX = self.touchPoint.x - _touchBeginPoint.x;
+//
+//                [self moveViewToEndX:moveX];
+//                
+//            } else {
+//                [self cureViewToEndLocation:self.touchPoint];
+//                
+//            }
+//        }
+//    }];
+//    
+//    
+//}
 
 
 @end

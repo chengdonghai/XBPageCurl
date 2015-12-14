@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  s.name         = "XBPageCurl"
+  s.name         = "TYXBPageCurl"
   s.version      = "1.0.2"
   s.summary      = "A decent page curl transition for iOS."
 
@@ -79,7 +79,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/chengdonghai/XBPageCurl.git", :tag => “1.0.2” }
+  s.source       = { :git => "https://github.com/chengdonghai/XBPageCurl.git", :tag => "1.0.2" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
