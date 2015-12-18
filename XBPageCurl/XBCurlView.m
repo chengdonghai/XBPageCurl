@@ -937,6 +937,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 - (void)drawViewOnFrontOfPage:(UIView *)view
 {
     [EAGLContext setCurrentContext:self.context];
+    //UIImageView *v = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"免费活动启动页面750x1334"]];
     [self drawView:view onTexture:frontTexture];
     
     //Force a redraw to avoid glitches
@@ -1042,8 +1043,8 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 
 - (void)createBackGradientTexture
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"BackPageGradient" ofType:@"png"];
-    UIImage *backPageImage = [[UIImage alloc] initWithContentsOfFile:path];
+    NSString *path =  [[NSBundle mainBundle] pathForResource:@"BackPageGradient" ofType:@"png"];
+    UIImage *backPageImage = [UIImage imageNamed:@"BackPageGradient.png"];//[[UIImage alloc] initWithContentsOfFile:path];
     backGradientTexture = [self generateTexture];
     
     glActiveTexture(GL_TEXTURE1);
@@ -1104,10 +1105,11 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     //Reset cylinder properties, positioning it on the right side, oriented vertically
     self.cylinderPosition = startPosition;
     self.cylinderAngle = M_PI_2;
-    self.cylinderRadius = 20;
+    self.cylinderRadius = 30;
     
     //Update the view drawn on the front of the curling page
     [self drawViewOnFrontOfPage:self.curlingView];
+
     //Start the cylinder animation
     __weak XBCurlView *weakSelf = self;
     [self setCylinderPosition:cylinderPosition cylinderAngle:cylinderAngle cylinderRadius:cylinderRadius animatedWithDuration:duration completion:^{

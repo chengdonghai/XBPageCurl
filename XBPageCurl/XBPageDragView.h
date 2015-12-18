@@ -16,6 +16,13 @@ typedef enum : NSUInteger {
     BookPageFlipAnimationTypeOther //其他
 } BookPageFlipAnimationType;
 
+typedef enum : NSUInteger {
+    BookPageFlipTypeToNextPage = 0, //下一页
+    BookPageFlipTypeToPrePage,      //上一页
+    BookPageFlipTypeToNextChapter,  //下一章
+    BookPageFlipTypeToPreChapter    //上一章
+    
+} BookPageFlipType;
 
 
 @protocol XBPageDragViewDataSource;
@@ -47,7 +54,7 @@ typedef enum : NSUInteger {
 - (void)XBPageDragViewTurnToPreChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
 - (void)XBPageDragViewTurnToNextChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
 - (void)XBPageDragViewClickCenter:(XBPageDragView *)view;
-- (void)XBPageDragViewCurlDidEnd:(XBPageDragView *)view curlSuccess:(BOOL)success;
+- (void)XBPageDragViewCurlDidEnd:(XBPageDragView *)view curlSuccess:(BOOL)success pageFlipType:(BookPageFlipType)flipType;
 
 @end
 

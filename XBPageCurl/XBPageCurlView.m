@@ -127,7 +127,7 @@
         }
     }
     
-    [self updateCylinderStateWithPoint:p animated:YES];
+    [self updateCylinderStateWithPoint:p animated:NO];
 }
 
 - (void)touchMovedToPoint:(CGPoint)p
