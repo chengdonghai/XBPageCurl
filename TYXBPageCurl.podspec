@@ -105,7 +105,7 @@ Pod::Spec.new do |s|
   #
 
   # s.resource  = "icon.png"
-  s.resources = "XBPageCurl/Resources/*.glsl"
+s.resources = "XBPageCurl/Resources/*.{glsl,png}"
 
   # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
 
