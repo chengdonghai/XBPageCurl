@@ -49,10 +49,10 @@ typedef enum : NSUInteger {
 //- (void)XBPageDragView:(XBPageDragView *)view touchMovedToPoint:(CGPoint)p;
 //- (void)XBPageDragView:(XBPageDragView *)view touchEndedAtPoint:(CGPoint)p;
 
-- (void)XBPageDragViewTurnToPrePage:(XBPageDragView *)view;
-- (void)XBPageDragViewTurnToNextPage:(XBPageDragView *)view;
-- (void)XBPageDragViewTurnToPreChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
-- (void)XBPageDragViewTurnToNextChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
+- (BOOL)XBPageDragViewTurnToPrePage:(XBPageDragView *)view;
+- (BOOL)XBPageDragViewTurnToNextPage:(XBPageDragView *)view;
+- (BOOL)XBPageDragViewTurnToPreChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
+- (BOOL)XBPageDragViewTurnToNextChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
 - (void)XBPageDragViewClickCenter:(XBPageDragView *)view;
 - (void)XBPageDragViewCurlDidEnd:(XBPageDragView *)view curlSuccess:(BOOL)success pageFlipType:(BookPageFlipType)flipType;
 

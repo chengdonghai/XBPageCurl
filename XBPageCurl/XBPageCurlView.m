@@ -9,16 +9,14 @@
 #import "XBPageCurlView.h"
 #import "CGPointAdditions.h"
 
-#define kDuration 0.3
+#define kDuration 0.5
 #define CLAMP(x, a, b) MAX(a, MIN(x, b))
 
 @interface XBPageCurlView ()
 
 @property (nonatomic, assign) CGFloat cylinderAngle;
 @property (nonatomic, assign) CGPoint startPickingPosition;
-
-@property (nonatomic, assign) CGPoint startPosition;
-
+//@property (nonatomic, assign) CGPoint startPosition;
 @end
 
 @implementation XBPageCurlView
@@ -66,6 +64,7 @@
 
 - (void)updateCylinderStateWithPoint:(CGPoint)p animated:(BOOL)animated
 {
+    //NSLog(@"self.startPickingPosition:%@", NSStringFromCGPoint(self.startPickingPosition));
     CGPoint v = CGPointSub(p, self.startPickingPosition);
     CGFloat l = CGPointLength(v);
     
@@ -93,6 +92,7 @@
     
     NSTimeInterval duration = animated? kDuration: 0;
     CGFloat a = CLAMP(angle, self.minimumCylinderAngle, self.maximumCylinderAngle);
+    //NSLog(@"position:%@,angle:%f,radius:%f",NSStringFromCGPoint(c),a,r);
     [self setCylinderPosition:c cylinderAngle:a cylinderRadius:r animatedWithDuration:duration];
 }
 
@@ -150,7 +150,7 @@
 //                d = weightedSquareDistance;
 //            }
 //        }
-        NSLog(@"closestSnappingPoint:%@",closestSnappingPoint);
+        //NSLog(@"closestSnappingPoint:%@",closestSnappingPoint);
         NSAssert(closestSnappingPoint != nil, @"There is always a closest point in a non-empty set of points hence closestSnappingPoint should not be nil.");
         
         [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewWillSnapToPointNotification object:self userInfo:@{kXBSnappingPointKey: closestSnappingPoint}];
@@ -167,29 +167,41 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    UITouch *touch = [touches anyObject];
-    CGPoint p = [touch locationInView:self];
-    self.startPosition = p;
-    [self touchBeganAtPoint:p];
+//    UITouch *touch = [touches anyObject];
+//    CGPoint p = [touch locationInView:self];
+//    self.startPosition = p;
+//    [self touchBeganAtPoint:p];
+    if (self.pageCurlViewDelegate) {
+        [self.pageCurlViewDelegate XBPageCurlView:self touchBegan:touches withEvent:event];
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    CGPoint p = [[touches anyObject] locationInView:self];
-    [self touchMovedToPoint:p];
+//    CGPoint p = [[touches anyObject] locationInView:self];
+//    [self touchMovedToPoint:p];
+    if (self.pageCurlViewDelegate) {
+        [self.pageCurlViewDelegate XBPageCurlView:self touchMove:touches withEvent:event];
+    }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    CGPoint p = [[touches anyObject] locationInView:self];
-    [self touchEndedAtPoint:p andCurlSuccess:CGPointToPointDistance(self.startPosition, p)];
+    if (self.pageCurlViewDelegate) {
+        [self.pageCurlViewDelegate XBPageCurlView:self touchEnd:touches withEvent:event];
+    }
+//    CGPoint p = [[touches anyObject] locationInView:self];
+//    [self touchEndedAtPoint:p andCurlSuccess:CGPointToPointDistance(self.startPosition, p)];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [self touchesEnded:touches withEvent:event];
 }
-
+- (void)dealloc
+{
+    
+}
 @end
 
 #pragma mark - Notifications

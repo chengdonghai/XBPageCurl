@@ -69,7 +69,7 @@
 -(void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
 {
     //NSUInteger idx = [_selectedIndexes firstIndex];
-    NSLog(@"removeAnimationAtidx:%i",flag);
+   // NSLog(@"removeAnimationAtidx:%i",flag);
     [self stopAnimation];
 }
 

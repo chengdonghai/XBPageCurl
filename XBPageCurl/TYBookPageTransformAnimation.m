@@ -10,7 +10,7 @@
 
 @implementation TYBookPageTransformAnimation
 
-+(void)transitionWithType:(NSString *)type andBlock:(void(^)())block superLayer:(CALayer *)layer
++(void)transitionWithType:(NSString *)type andBlock:(BOOL(^)())block superLayer:(CALayer *)layer
 {
     CATransition *transition = [[CATransition alloc] init];
     transition.delegate = self;
@@ -18,9 +18,12 @@
     transition.duration = 0.1;
     transition.timingFunction = UIViewAnimationCurveEaseInOut;
     if(block) {
-       block();
+        BOOL b =block();
+        if (b) {
+           [layer addAnimation:transition forKey:@"animation"];
+        }
     }
-    [layer addAnimation:transition forKey:@"animation"];
+    
 }
 
 @end

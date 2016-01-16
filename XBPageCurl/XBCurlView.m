@@ -937,7 +937,10 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 - (void)drawViewOnFrontOfPage:(UIView *)view
 {
     [EAGLContext setCurrentContext:self.context];
-    //UIImageView *v = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"免费活动启动页面750x1334"]];
+   // UIImageView *v = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"PDF默认封面"]];
+    //v.frame = view.bounds;
+    //UIView *v = [[UIView alloc]initWithFrame:view.bounds];
+    //v.backgroundColor =[UIColor orangeColor];
     [self drawView:view onTexture:frontTexture];
     
     //Force a redraw to avoid glitches
@@ -1043,7 +1046,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 
 - (void)createBackGradientTexture
 {
-    NSString *path =  [[NSBundle mainBundle] pathForResource:@"BackPageGradient" ofType:@"png"];
+   // NSString *path =  [[NSBundle mainBundle] pathForResource:@"BackPageGradient" ofType:@"png"];
     UIImage *backPageImage = [UIImage imageNamed:@"BackPageGradient.png"];//[[UIImage alloc] initWithContentsOfFile:path];
     backGradientTexture = [self generateTexture];
     
@@ -1100,7 +1103,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 }
 - (void)curlView:(UIView *)view cylinderPosition:(CGPoint)cylinderPosition startPosition:(CGPoint)startPosition cylinderAngle:(CGFloat)cylinderAngle cylinderRadius:(CGFloat)cylinderRadius animatedWithDuration:(NSTimeInterval)duration completion:(void (^)(void))completion
 {
-    self.curlingView = view;
+   // self.curlingView = view;
     
     //Reset cylinder properties, positioning it on the right side, oriented vertically
     self.cylinderPosition = startPosition;
@@ -1108,13 +1111,13 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     self.cylinderRadius = 30;
     
     //Update the view drawn on the front of the curling page
-    [self drawViewOnFrontOfPage:self.curlingView];
+    [self drawViewOnFrontOfPage:view];
 
     //Start the cylinder animation
     __weak XBCurlView *weakSelf = self;
     [self setCylinderPosition:cylinderPosition cylinderAngle:cylinderAngle cylinderRadius:cylinderRadius animatedWithDuration:duration completion:^{
         [weakSelf stopAnimating];
-        weakSelf.curlingView.hidden = NO;
+        //weakSelf.curlingView.hidden = NO;
         [weakSelf removeFromSuperview];
         if (completion) {
             completion();
@@ -1122,11 +1125,11 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     }];
     
     //Setup the view hierarchy properly
-    [self.curlingView.superview addSubview:self];
-    self.curlingView.hidden = YES;
-    
-    //Start the rendering loop
+    [view.superview addSubview:self];
+     view.hidden = YES;
     [self startAnimating];
+    //Start the rendering loop
+    
 }
 - (void)uncurlAnimatedWithDuration:(NSTimeInterval)duration
 {
@@ -1174,7 +1177,21 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     // this line.
     [displayLink invalidate];
 }
-
+//设置最小翻页角度
+-(CGFloat)minAngele:(CGPoint)location
+{
+    CGPoint leftBottomPoint = CGPointMake(0.0f, 0.0f);
+    CGFloat tan = (location.y - leftBottomPoint.y) / ((location.x<0?0:location.x) - leftBottomPoint.x);
+    return atan(tan);
+}
+//设置最大翻页角度
+-(CGFloat)maxAngele:(CGPoint)location
+{
+    CGPoint leftTopPoint = CGPointMake(0, self.bounds.size.height * self.screenScale);
+    CGFloat tan = ((location.x<0?0:location.x) - leftTopPoint.x) / (leftTopPoint.y - location.y);
+    //NSLog(@"tan:%f,atan:%f",tan,atan(tan));
+    return atan(tan) + M_PI_2;
+}
 - (void)draw:(CADisplayLink *)sender
 {
     [EAGLContext setCurrentContext:self.context];
@@ -1197,7 +1214,9 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     CGPoint glCylinderPosition = CGPointMake(self.cylinderPosition.x*self.screenScale, (self.bounds.size.height - self.cylinderPosition.y)*self.screenScale);
     CGFloat glCylinderAngle = M_PI - self.cylinderAngle;
     CGFloat glCylinderRadius = self.cylinderRadius*self.screenScale;
-    
+    //NSLog(@"draw:glCylinderPosition%@,glCylinderAngle:%f,glCylinderRadius:%f",NSStringFromCGPoint(glCylinderPosition),glCylinderAngle,glCylinderRadius);
+    glCylinderAngle = MAX([self minAngele:glCylinderPosition], MIN(glCylinderAngle, [self maxAngele:glCylinderPosition]));
+  
     glUniform2f(nextPageCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
     glUniform2f(nextPageCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
     glUniform1f(nextPageCylinderRadiusHandle, glCylinderRadius);
