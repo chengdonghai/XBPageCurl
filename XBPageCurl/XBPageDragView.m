@@ -45,7 +45,7 @@
 @property (nonatomic, strong) TYMoveTransformAnimation *moveAnimation;
 @property (nonatomic, strong) UIView *curlingView;
 @property (nonatomic, strong) TYPoints *points;
-
+@property (nonatomic) BOOL didInited;
 @end
 
 @implementation XBPageDragView
@@ -76,6 +76,12 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self.pageCurlView stopAnimating];
     
+}
+
+-(void)initViewToCurl
+{
+    UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
+    self.viewToCurl = targetView;
 }
 
 #pragma mark - Properties
@@ -158,7 +164,7 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
- 
+    
     [self.points clearAllPoints];
 
     UITouch *touch = [touches anyObject];
@@ -173,6 +179,12 @@
         self.curlViewDidLoad = NO;
         self.curlViewDidEnd = NO;
         self.curlViewDidMoved = NO;
+        
+        if (!self.didInited
+            && [self.dataSource XBPageDragViewPageFlipAnimationType:self] == BookPageFlipAnimationTypeSimulation) {
+            self.didInited = YES;
+            [self initViewToCurl];
+        }
     }
 }
 
