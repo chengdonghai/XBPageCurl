@@ -24,6 +24,12 @@ typedef enum : NSUInteger {
     
 } BookPageFlipType;
 
+typedef enum : NSUInteger {
+    BookPageFlipDirectionNone = 0, //无动作
+    BookPageFlipDirectionForward,  //往前翻
+    BookPageFlipDirectionBackward  //往后翻
+    
+} BookPageFlipDirection;
 
 @protocol XBPageDragViewDataSource;
 @protocol XBPageDragViewDelegate;
@@ -39,7 +45,13 @@ typedef enum : NSUInteger {
 
 - (void)uncurlPageAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (void)refreshPageCurlView;
--(void)initViewToCurl;
+- (void)initViewToCurl;
+
+- (void)turnToNextChapter;
+- (void)turnToNextChapter:(BookPageFlipAnimationType)flipType;
+- (void)turnToPreChapter;
+- (void)turnToPreChapter:(BookPageFlipAnimationType)flipType;
+- (void)turnToChapter:(NSInteger)chapterID position:(NSInteger)position;
 
 @end
 
@@ -52,11 +64,11 @@ typedef enum : NSUInteger {
 
 - (BOOL)XBPageDragViewTurnToPrePage:(XBPageDragView *)view;
 - (BOOL)XBPageDragViewTurnToNextPage:(XBPageDragView *)view;
-- (BOOL)XBPageDragViewTurnToPreChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
+- (BOOL)XBPageDragViewTurnToPreChapter:(XBPageDragView *)view isLastPage:(BOOL)isLastPage completion:(void (^)(void))completion;
 - (BOOL)XBPageDragViewTurnToNextChapter:(XBPageDragView *)view completion:(void (^)(void))completion;
 - (void)XBPageDragViewClickCenter:(XBPageDragView *)view;
 - (void)XBPageDragViewCurlDidEnd:(XBPageDragView *)view curlSuccess:(BOOL)success pageFlipType:(BookPageFlipType)flipType;
-
+-(BOOL)XBPageDragViewTurnToChapter:(XBPageDragView *)view chapterID:(NSInteger)chapterID position:(NSInteger)position completion:(void (^)(BookPageFlipDirection d))completion;
 @end
 
 @protocol XBPageDragViewDataSource <NSObject>
@@ -67,5 +79,7 @@ typedef enum : NSUInteger {
 - (BOOL)XBPageDragViewHasNextChapter:(XBPageDragView *)view;
 - (UIView *)XBPageDragViewTargetView:(XBPageDragView *)view willTurnToNext:(BOOL)next;
 - (BookPageFlipAnimationType)XBPageDragViewPageFlipAnimationType:(XBPageDragView *)view;
+- (BOOL)XBPageDragViewHasChapter:(XBPageDragView *)view chapterID:(NSInteger)chapterID;
+
 
 @end

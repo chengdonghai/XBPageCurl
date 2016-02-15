@@ -194,7 +194,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
         _antialiasing = antialiasing;
         _horizontalResolution = horizontalResolution;
         _verticalResolution = verticalResolution;
-        
+        self.backgroundColor =[UIColor orangeColor];
         if (![self initialize]) {
             return nil;
         }
@@ -1106,12 +1106,12 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
    // self.curlingView = view;
     
     //Reset cylinder properties, positioning it on the right side, oriented vertically
-    self.cylinderPosition = startPosition;
-    self.cylinderAngle = M_PI_2;
-    self.cylinderRadius = 30;
+//    self.cylinderPosition = startPosition;
+//    self.cylinderAngle = M_PI_2;
+//    self.cylinderRadius = 30;
     
     //Update the view drawn on the front of the curling page
-    [self drawViewOnFrontOfPage:view];
+   // [self drawViewOnFrontOfPage:view];
 
     //Start the cylinder animation
     __weak XBCurlView *weakSelf = self;
