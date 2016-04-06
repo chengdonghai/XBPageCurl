@@ -355,32 +355,32 @@
     
     CGFloat moveX = [self.points movedX];
     CGFloat moveY = [self.points movedY];
-    NSLog(@"self.points:%@,touches.count:%li",self.points.points,[touches count]);
     switch ([self.dataSource XBPageDragViewPageFlipAnimationType:self]) {
         case BookPageFlipAnimationTypeFade:
         {
             
-                if (moveX < -10 && fabs(moveX) >= fabs(moveY)) {
-                    
-                    [self turnToNextPageAnimatedWithType:kCATransitionFade];
-                    
-                } else if(moveX > 10 && fabs(moveX)>= fabs(moveY)) {
-                    
-                    [self turnToPrePageAnimatedWithType:kCATransitionFade isLastPage:YES];
-                } else if([self touchPointInLeftArea:touchLocation]){
-                    
-                    [self turnToPrePageAnimatedWithType:kCATransitionFade isLastPage:YES];
-                    
-                }else if([self touchPointInRightArea:touchLocation]){
-                    
-                    [self turnToNextPageAnimatedWithType:kCATransitionFade];
-                    
-                }else if([self touchPointInCenterArea:touchLocation]){
-                    
-                    [self.delegate XBPageDragViewClickCenter:self];
-                    [self endFlip];
+                if ([self.points isMoved]) {
+                    if (moveX < -10 && fabs(moveX) >= fabs(moveY)) {
+                        [self turnToNextPageAnimatedWithType:kCATransitionFade];
+                    } else if (moveX > 10 && fabs(moveX)>= fabs(moveY)) {
+                        [self turnToPrePageAnimatedWithType:kCATransitionFade isLastPage:YES];
+                    }
                 } else {
-                    [self endFlip];
+                    if([self touchPointInLeftArea:touchLocation]){
+                        
+                        [self turnToPrePageAnimatedWithType:kCATransitionFade isLastPage:YES];
+                        
+                    }else if([self touchPointInRightArea:touchLocation]){
+                        
+                        [self turnToNextPageAnimatedWithType:kCATransitionFade];
+                        
+                    }else if([self touchPointInCenterArea:touchLocation]){
+                        
+                        [self.delegate XBPageDragViewClickCenter:self];
+                        [self endFlip];
+                    } else {
+                        [self endFlip];
+                    }
                 }
             
         }
