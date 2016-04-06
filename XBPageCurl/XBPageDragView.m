@@ -364,6 +364,8 @@
                         [self turnToNextPageAnimatedWithType:kCATransitionFade];
                     } else if (moveX > 10 && fabs(moveX)>= fabs(moveY)) {
                         [self turnToPrePageAnimatedWithType:kCATransitionFade isLastPage:YES];
+                    } else {
+                        [self endFlip];
                     }
                 } else {
                     if([self touchPointInLeftArea:touchLocation]){
