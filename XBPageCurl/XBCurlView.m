@@ -1160,6 +1160,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 
 - (void)startAnimating
 {
+   
     [self.displayLink invalidate];
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(draw:)];
     [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
@@ -1194,96 +1195,98 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 }
 - (void)draw:(CADisplayLink *)sender
 {
-    [EAGLContext setCurrentContext:self.context];
-    
-    /* Clear framebuffer */
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    /* Enable culling. First lets render the front facing triangles. */
-    glCullFace(GL_BACK);
-    
-    /* If the page is not opaque (the curled mesh) enable alpha blending. The glBlendFunc is
-     * setup that way bacause the texture has got pre-multiplied alpha. */
-    if (!self.pageOpaque) {
-        glEnable(GL_BLEND);
-    }
-    
-    /* Draw the nextPage */
-    glUseProgram(nextPageProgram);
-    
-    CGPoint glCylinderPosition = CGPointMake(self.cylinderPosition.x*self.screenScale, (self.bounds.size.height - self.cylinderPosition.y)*self.screenScale);
-    CGFloat glCylinderAngle = M_PI - self.cylinderAngle;
-    CGFloat glCylinderRadius = self.cylinderRadius*self.screenScale;
-    //NSLog(@"draw:glCylinderPosition%@,glCylinderAngle:%f,glCylinderRadius:%f",NSStringFromCGPoint(glCylinderPosition),glCylinderAngle,glCylinderRadius);
-    glCylinderAngle = MAX([self minAngele:glCylinderPosition], MIN(glCylinderAngle, [self maxAngele:glCylinderPosition]));
-  
-    glUniform2f(nextPageCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
-    glUniform2f(nextPageCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
-    glUniform1f(nextPageCylinderRadiusHandle, glCylinderRadius);
-    
-    //If it's got a texture, set it. Otherwise it will be drawn transparently but will still cast shadows.
-    if (nextPageTexture != 0) {
-        glBindTexture(GL_TEXTURE_2D, nextPageTexture);
-    }
-     
-    glBindVertexArrayOES(nextPageVAO);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    
-    /* Draw the previousPage if any */
-    /* TODO */
-    
-    /* Draw the front facing triangles of the curled mesh (GL_BACK was set above, hence backfaces will be culled here) */
-    glUseProgram(frontProgram);
-    
-    glUniform2f(frontCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
-    glUniform2f(frontCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
-    glUniform1f(frontCylinderRadiusHandle, glCylinderRadius);
-    
-    if (backTexture != 0 || nextPageTexture != 0) { // In this case the frontTexture should already be bound, since it's the only texture around
-        glBindTexture(GL_TEXTURE_2D, frontTexture);
-    }
-    
-    glBindVertexArrayOES(frontVAO);
-    glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_SHORT, (void *)0);
-    
-    /* Next draw the back faces (the vertex buffer is already bound) */
-    glCullFace(GL_FRONT);
-    
-    glUseProgram(backProgram);
-    
-    glUniform2f(backCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
-    glUniform2f(backCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
-    glUniform1f(backCylinderRadiusHandle, glCylinderRadius);
-    
-    if (backTexture != 0) {
-        glBindTexture(GL_TEXTURE_2D, backTexture);
-    }
-    
-    glBindVertexArrayOES(backVAO);
-    glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_SHORT, (void *)0);
-    
-    glBindVertexArrayOES(0);
-    
-    //Disable blending for now
-    if (!self.pageOpaque) {
-        glDisable(GL_BLEND);
-    }
-    
-    /* If antialiasing is enabled, draw on the multisampling buffers */
-    if (self.antialiasing) {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, framebuffer);
-        glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, sampleFramebuffer);
-        glResolveMultisampleFramebufferAPPLE();
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {//如果应用不在前台则不执行动画，否则会崩溃
         
-        GLenum attachments[] = {GL_COLOR_ATTACHMENT0};
-        glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE, 1, attachments);
+        [EAGLContext setCurrentContext:self.context];
         
-        glBindFramebuffer(GL_FRAMEBUFFER, sampleFramebuffer);
+        /* Clear framebuffer */
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        /* Enable culling. First lets render the front facing triangles. */
+        glCullFace(GL_BACK);
+        
+        /* If the page is not opaque (the curled mesh) enable alpha blending. The glBlendFunc is
+         * setup that way bacause the texture has got pre-multiplied alpha. */
+        if (!self.pageOpaque) {
+            glEnable(GL_BLEND);
+        }
+        
+        /* Draw the nextPage */
+        glUseProgram(nextPageProgram);
+        
+        CGPoint glCylinderPosition = CGPointMake(self.cylinderPosition.x*self.screenScale, (self.bounds.size.height - self.cylinderPosition.y)*self.screenScale);
+        CGFloat glCylinderAngle = M_PI - self.cylinderAngle;
+        CGFloat glCylinderRadius = self.cylinderRadius*self.screenScale;
+        //NSLog(@"draw:glCylinderPosition%@,glCylinderAngle:%f,glCylinderRadius:%f",NSStringFromCGPoint(glCylinderPosition),glCylinderAngle,glCylinderRadius);
+        glCylinderAngle = MAX([self minAngele:glCylinderPosition], MIN(glCylinderAngle, [self maxAngele:glCylinderPosition]));
+        
+        glUniform2f(nextPageCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
+        glUniform2f(nextPageCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
+        glUniform1f(nextPageCylinderRadiusHandle, glCylinderRadius);
+        
+        //If it's got a texture, set it. Otherwise it will be drawn transparently but will still cast shadows.
+        if (nextPageTexture != 0) {
+            glBindTexture(GL_TEXTURE_2D, nextPageTexture);
+        }
+        
+        glBindVertexArrayOES(nextPageVAO);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        
+        /* Draw the previousPage if any */
+        /* TODO */
+        
+        /* Draw the front facing triangles of the curled mesh (GL_BACK was set above, hence backfaces will be culled here) */
+        glUseProgram(frontProgram);
+        
+        glUniform2f(frontCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
+        glUniform2f(frontCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
+        glUniform1f(frontCylinderRadiusHandle, glCylinderRadius);
+        
+        if (backTexture != 0 || nextPageTexture != 0) { // In this case the frontTexture should already be bound, since it's the only texture around
+            glBindTexture(GL_TEXTURE_2D, frontTexture);
+        }
+        
+        glBindVertexArrayOES(frontVAO);
+        glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_SHORT, (void *)0);
+        
+        /* Next draw the back faces (the vertex buffer is already bound) */
+        glCullFace(GL_FRONT);
+        
+        glUseProgram(backProgram);
+        
+        glUniform2f(backCylinderPositionHandle, glCylinderPosition.x, glCylinderPosition.y);
+        glUniform2f(backCylinderDirectionHandle, cosf(glCylinderAngle), sinf(glCylinderAngle));
+        glUniform1f(backCylinderRadiusHandle, glCylinderRadius);
+        
+        if (backTexture != 0) {
+            glBindTexture(GL_TEXTURE_2D, backTexture);
+        }
+        
+        glBindVertexArrayOES(backVAO);
+        glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_SHORT, (void *)0);
+        
+        glBindVertexArrayOES(0);
+        
+        //Disable blending for now
+        if (!self.pageOpaque) {
+            glDisable(GL_BLEND);
+        }
+        
+        /* If antialiasing is enabled, draw on the multisampling buffers */
+        if (self.antialiasing) {
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER_APPLE, framebuffer);
+            glBindFramebuffer(GL_READ_FRAMEBUFFER_APPLE, sampleFramebuffer);
+            glResolveMultisampleFramebufferAPPLE();
+            
+            GLenum attachments[] = {GL_COLOR_ATTACHMENT0};
+            glDiscardFramebufferEXT(GL_READ_FRAMEBUFFER_APPLE, 1, attachments);
+            
+            glBindFramebuffer(GL_FRAMEBUFFER, sampleFramebuffer);
+        }
+        
+        /* Finally, present, swap buffers, whatever */
+        [self.context presentRenderbuffer:GL_RENDERBUFFER];
     }
-    
-    /* Finally, present, swap buffers, whatever */
-    [self.context presentRenderbuffer:GL_RENDERBUFFER];
-    
     /* Update all animations */
     NSTimeInterval dt = sender.duration;
     dt = MAX(0, MIN(dt, 0.2));
