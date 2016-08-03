@@ -153,7 +153,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
         return NO;
     }
     
-    [self createVertexBufferWithXRes:self.horizontalResolution yRes:self.verticalResolution];
+    [self createVertexBufferWithXRes:(GLuint)self.horizontalResolution yRes:(GLuint)self.verticalResolution];
     [self createNextPageVertexBuffer];
     
     if (![self setupShaders]) {
@@ -229,12 +229,12 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     return [CAEAGLLayer class];
 }
 
-- (void)layoutSubviews
-{
-    [EAGLContext setCurrentContext:self.context];
-    [self createFramebuffer];
-    [self setupMVP];
-}
+//- (void)layoutSubviews
+//{
+//    [EAGLContext setCurrentContext:self.context];
+//    [self createFramebuffer];
+//    [self setupMVP];
+//}
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
 {
@@ -355,8 +355,11 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 {
     self.wasAnimating = self.displayLink != nil;
     [self stopAnimating];
-    [EAGLContext setCurrentContext:self.context];
-    glFinish();
+    if (self.context) {
+        [EAGLContext setCurrentContext:self.context];
+        glFinish();
+    }
+    
 }
 
 - (void)applicationDidBecomeActiveNotification:(NSNotification *)notification
@@ -538,6 +541,9 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     free(vertices);
     
     elementCount = xRes*yRes*2*3;
+    
+    assert(elementCount);
+    
     GLsizeiptr indicesSize = elementCount*sizeof(GLushort);//Two triangles per square, 3 indices per triangle
     GLushort *indices = malloc(indicesSize);
     
@@ -885,8 +891,8 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 
 - (void)drawImage:(UIImage *)image onTexture:(GLuint)texture flipHorizontal:(BOOL)flipHorizontal
 {
-    GLuint width = CGImageGetWidth(image.CGImage);
-    GLuint height = CGImageGetHeight(image.CGImage);
+    CGFloat width = CGImageGetWidth(image.CGImage);
+    CGFloat height = CGImageGetHeight(image.CGImage);
     
     [self drawOnTexture:texture width:width height:height drawBlock:^(CGContextRef context) {
         if (flipHorizontal) {
@@ -974,7 +980,6 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     
     if (backTexture == 0) {
         backTexture = [self generateTexture];
-        backTexture=2;
     }
     [self drawView:view onTexture:backTexture flipHorizontal:YES];
 }
@@ -1068,7 +1073,7 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     CGContextDrawImage(context, r, backPageImage.CGImage);
     CGContextRestoreGState(context);  
     GLubyte *textureData = (GLubyte *)CGBitmapContextGetData(context);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
     CGContextRelease(context);
 }
 
