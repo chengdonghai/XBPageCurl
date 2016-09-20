@@ -10,7 +10,7 @@
 
 @interface TYBookPageTransformAnimation : NSObject
 
-+(void)transitionWithType:(NSString *)type andBlock:(BOOL(^)())block superLayer:(CALayer *)layer;
++(void)transitionWithType:(NSString *)type andBlock:(void(^)())block superLayer:(CALayer *)layer;
 
 
 @end

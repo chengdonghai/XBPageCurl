@@ -218,13 +218,16 @@
                         self.curlViewDidLoad = YES;
                         
                     } else if ([self.dataSource XBPageDragViewHasNextChapter:self]) {
-                        [self.delegate XBPageDragViewTurnToNextChapter:self completion:^{
-                            self.pageFlipType = BookPageFlipTypeToNextChapter;
-                            UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
-                            [self addShadowForView:targetView];
-                            [self.moveAnimation moveTargetView:targetView moveLength:moveX duration:kMoveDuration animated:NO];
+                        [self.delegate XBPageDragViewTurnToNextChapter:self completion:^(BOOL suc){
+                            if (suc) {
+                                self.pageFlipType = BookPageFlipTypeToNextChapter;
+                                UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
+                                [self addShadowForView:targetView];
+                                [self.moveAnimation moveTargetView:targetView moveLength:moveX duration:kMoveDuration animated:NO];
+                                
+                                self.curlViewDidLoad = YES;
+                            }
                             
-                            self.curlViewDidLoad = YES;
                         }];
                         
                     }
@@ -239,13 +242,15 @@
                         
                         self.curlViewDidLoad = YES;
                     } else if ([self.dataSource XBPageDragViewHasPreChapter:self]) {
-                        [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:YES completion:^{
-                            self.pageFlipType = BookPageFlipTypeToPreChapter;
-                            UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:NO];
-                            [self addShadowForView:targetView];
-                            [self.moveAnimation moveTargetView:targetView moveLength:touchLocation.x - targetView.frame.size.width duration:kMoveDuration animated:NO];
-                            
-                            self.curlViewDidLoad = YES;
+                        [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:YES completion:^(BOOL suc){
+                            if (suc) {
+                                self.pageFlipType = BookPageFlipTypeToPreChapter;
+                                UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:NO];
+                                [self addShadowForView:targetView];
+                                [self.moveAnimation moveTargetView:targetView moveLength:touchLocation.x - targetView.frame.size.width duration:kMoveDuration animated:NO];
+                                
+                                self.curlViewDidLoad = YES;
+                            }
                             
                         }];
                         
@@ -281,14 +286,17 @@
                         self.viewToCurl.hidden = YES;
                         
                     } else if ([self.dataSource XBPageDragViewHasNextChapter:self]) {
-                         [self.delegate XBPageDragViewTurnToNextChapter:self completion:^{
-                            self.pageFlipType = BookPageFlipTypeToNextChapter;
-
-                            UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
-                            self.cornerSnappingPoint.position = CGPointMake(self.frame.size.width, self.frame.size.height / 2.0) ;
-                            [self curlView:targetView maxAngle:[self maxAngele:touchLocation baseAngle:M_PI_2] minAngle:[self minAngele:touchLocation baseAngle:M_PI_2] touchLocation:touchLocation targetPosition:CGPointMake(kLeftX, self.frame.size.height*0.5) cancelPostion:CGPointMake(self.frame.size.width, self.frame.size.height*0.5)];
-                            self.curlViewDidLoad = YES;
-                            self.viewToCurl.hidden = YES;
+                         [self.delegate XBPageDragViewTurnToNextChapter:self completion:^(BOOL suc){
+                             if (suc) {
+                                 self.pageFlipType = BookPageFlipTypeToNextChapter;
+                                 
+                                 UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
+                                 self.cornerSnappingPoint.position = CGPointMake(self.frame.size.width, self.frame.size.height / 2.0) ;
+                                 [self curlView:targetView maxAngle:[self maxAngele:touchLocation baseAngle:M_PI_2] minAngle:[self minAngele:touchLocation baseAngle:M_PI_2] touchLocation:touchLocation targetPosition:CGPointMake(kLeftX, self.frame.size.height*0.5) cancelPostion:CGPointMake(self.frame.size.width, self.frame.size.height*0.5)];
+                                 self.curlViewDidLoad = YES;
+                                 self.viewToCurl.hidden = YES;
+                             }
+                            
                         }];
                         
                     }
@@ -308,13 +316,16 @@
                     } else if ([self.dataSource XBPageDragViewHasPreChapter:self]) {
                         
                         self.cornerSnappingPoint.position = touchLocation;
-                        [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:YES completion:^{
-                            self.pageFlipType = BookPageFlipTypeToPreChapter;
-
-                            UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:NO];
-                            [self curlView:targetView maxAngle:M_PI_2 minAngle:M_PI_2 touchLocation:touchLocation targetPosition:CGPointMake(self.frame.size.width, self.frame.size.height*0.5) cancelPostion:CGPointMake(kLeftX, self.frame.size.height*0.5)];
-                            self.curlViewDidLoad = YES;
-                            self.viewToCurl.hidden = YES;
+                        [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:YES completion:^(BOOL suc){
+                            if (suc) {
+                                self.pageFlipType = BookPageFlipTypeToPreChapter;
+                                
+                                UIView *targetView =  [self.dataSource XBPageDragViewTargetView:self willTurnToNext:NO];
+                                [self curlView:targetView maxAngle:M_PI_2 minAngle:M_PI_2 touchLocation:touchLocation targetPosition:CGPointMake(self.frame.size.width, self.frame.size.height*0.5) cancelPostion:CGPointMake(kLeftX, self.frame.size.height*0.5)];
+                                self.curlViewDidLoad = YES;
+                                self.viewToCurl.hidden = YES;
+                            }
+                            
                         }];
                         
                     }
@@ -630,30 +641,29 @@
 -(void)turnToNextChapterWithType:(NSString *)type
 {
     self.pageIsCurled = YES;
-    [TYBookPageTransformAnimation transitionWithType:type andBlock:^BOOL{
-        BOOL b = [self.delegate XBPageDragViewTurnToNextChapter:self completion:^{
-            self.pageFlipType = BookPageFlipTypeToNextChapter;
-            [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES  pageFlipType:self.pageFlipType];
-            [self endFlip];
-        }];
-        if (!b) {
-            [self endFlip];
+    [self.delegate XBPageDragViewTurnToNextChapter:self completion:^(BOOL suc){
+        if (suc) {
+            [TYBookPageTransformAnimation transitionWithType:type andBlock:^{
+ 
+                self.pageFlipType = BookPageFlipTypeToNextChapter;
+                [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES pageFlipType:self.pageFlipType];
+            } superLayer:self.superview.layer];
         }
-        return b;
-        
-    } superLayer:self.superview.layer];
+            
+        [self endFlip];
+    }];
+    
 }
 
 -(void)turnToNextPageWithType:(NSString *)type
 {
     self.pageIsCurled = YES;
     
-    [TYBookPageTransformAnimation transitionWithType:type andBlock:^BOOL{
-        BOOL b = [self.delegate XBPageDragViewTurnToNextPage:self];
+    [TYBookPageTransformAnimation transitionWithType:type andBlock:^{
+        [self.delegate XBPageDragViewTurnToNextPage:self];
         self.pageFlipType = BookPageFlipTypeToNextPage;
         [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES  pageFlipType:self.pageFlipType];
         [self endFlip];
-        return b;
     } superLayer:self.superview.layer];
 }
 
@@ -671,31 +681,31 @@
 -(void)turnToPreChapterWithType:(NSString *)type isLastPage:(BOOL)isLastPage
 {
     self.pageIsCurled = YES;
-    [TYBookPageTransformAnimation transitionWithType:type andBlock:^BOOL{
-        BOOL b = [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:isLastPage completion:^{
-            self.pageFlipType = BookPageFlipTypeToPreChapter;
-            
-            [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES  pageFlipType:self.pageFlipType];
-            [self endFlip];
-        }];
-        if (!b) {
-            [self endFlip];
+    [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:isLastPage completion:^(BOOL suc){
+        if (suc) {
+            [TYBookPageTransformAnimation transitionWithType:type andBlock:^{
+                
+                self.pageFlipType = BookPageFlipTypeToPreChapter;
+                
+                [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES  pageFlipType:self.pageFlipType];
+            } superLayer:self.superview.layer];
         }
-        return b;
+        [self endFlip];
         
-    } superLayer:self.superview.layer];
+    }];
+    
+    
 }
 
 -(void)turnToPrePageWithType:(NSString *)type
 {
     self.pageIsCurled = YES;
-    [TYBookPageTransformAnimation transitionWithType:type andBlock:^BOOL{
-        BOOL b  = [self.delegate XBPageDragViewTurnToPrePage:self];
+    [TYBookPageTransformAnimation transitionWithType:type andBlock:^{
+        [self.delegate XBPageDragViewTurnToPrePage:self];
         self.pageFlipType = BookPageFlipTypeToPrePage;
         [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES  pageFlipType:self.pageFlipType];
         [self endFlip];
-        return b;
-    } superLayer:self.superview.layer];
+     } superLayer:self.superview.layer];
 }
 
 -(void)turnToPrePageAnimatedWithType:(NSString *)type isLastPage:(BOOL)isLastPage
@@ -727,20 +737,22 @@
 -(void)turnToNextChapterWithMove
 {
     self.pageIsCurled = YES;
-    BOOL suc = [self.delegate XBPageDragViewTurnToNextChapter:self completion:^{
-        self.pageFlipType = BookPageFlipTypeToNextChapter;
-        
-        UIView *targetView = [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
-        [self addShadowForView:targetView];
-        
-        [self.moveAnimation moveTargetView:targetView moveLength:-self.frame.size.width-10 duration:kMoveDuration animated:YES completion:^{
-            [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES pageFlipType:self.pageFlipType];
+    [self.delegate XBPageDragViewTurnToNextChapter:self completion:^(BOOL suc){
+        if (suc) {
+            self.pageFlipType = BookPageFlipTypeToNextChapter;
+            
+            UIView *targetView = [self.dataSource XBPageDragViewTargetView:self willTurnToNext:YES];
+            [self addShadowForView:targetView];
+            
+            [self.moveAnimation moveTargetView:targetView moveLength:-self.frame.size.width-10 duration:kMoveDuration animated:YES completion:^{
+                [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES pageFlipType:self.pageFlipType];
+                [self endFlip];
+            }];
+        } else {
             [self endFlip];
-        }];
+        }
+        
     }];
-    if (!suc) {
-        [self endFlip];
-    }
 
 }
 -(void)turnToNextPageAnimatedWithMove
@@ -779,26 +791,28 @@
 -(void)turnToPreChapterWithMove:(BOOL)isLastPage
 {
     self.pageIsCurled = YES;
-    BOOL suc = [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:isLastPage completion:^{
-        self.pageFlipType = BookPageFlipTypeToPreChapter;
+    [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:isLastPage completion:^(BOOL suc){
+        if (suc) {
+            self.pageFlipType = BookPageFlipTypeToPreChapter;
+            
+            UIView *targetView = [self.dataSource XBPageDragViewTargetView:self willTurnToNext:NO];
+            
+            CGRect targetRect = targetView.frame;
+            targetRect.origin.x = -targetView.frame.size.width - 10;
+            targetView.frame = targetRect;
+            
+            [self addShadowForView:targetView];
+            
+            [self.moveAnimation moveTargetView:targetView moveLength:0 duration:kMoveDuration animated:YES completion:^{
+                [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES pageFlipType:self.pageFlipType];
+                [self endFlip];
+            }];
+        } else {
+           [self endFlip];
+        }
         
-        UIView *targetView = [self.dataSource XBPageDragViewTargetView:self willTurnToNext:NO];
-        
-        CGRect targetRect = targetView.frame;
-        targetRect.origin.x = -targetView.frame.size.width - 10;
-        targetView.frame = targetRect;
-        
-        [self addShadowForView:targetView];
-        
-        [self.moveAnimation moveTargetView:targetView moveLength:0 duration:kMoveDuration animated:YES completion:^{
-            [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES pageFlipType:self.pageFlipType];
-            [self endFlip];
-        }];
     }];
     
-    if (!suc) {
-        [self endFlip];
-    }
 }
 
 -(void)turnToPrePageAnimatedWithMove:(BOOL)isLastPage
@@ -844,14 +858,17 @@
 -(void)turnToNextChapterWithSimulation:(CGPoint)touchLocation
 {
     self.pageIsCurled = YES;
-    BOOL suc = [self.delegate XBPageDragViewTurnToNextChapter:self completion:^{
-        self.pageFlipType = BookPageFlipTypeToNextChapter;
+    [self.delegate XBPageDragViewTurnToNextChapter:self completion:^(BOOL suc){
+        if (suc) {
+            self.pageFlipType = BookPageFlipTypeToNextChapter;
+            
+            [self curlAction:YES tapPoint:touchLocation];
+        } else {
+            [self endFlip];
+        }
         
-        [self curlAction:YES tapPoint:touchLocation];
     }];
-    if (!suc) {
-        [self endFlip];
-    }
+    
 }
 -(void)turnToPrePageWithSimulation:(CGPoint)touchLocation
 {
@@ -868,13 +885,16 @@
 {
     self.pageIsCurled = YES;
     
-    BOOL suc =  [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:isLastPage completion:^{
-        self.pageFlipType = BookPageFlipTypeToPreChapter;
-        [self curlAction:NO tapPoint:touchLocation];
+    [self.delegate XBPageDragViewTurnToPreChapter:self isLastPage:isLastPage completion:^(BOOL suc){
+        if (suc) {
+            self.pageFlipType = BookPageFlipTypeToPreChapter;
+            [self curlAction:NO tapPoint:touchLocation];
+        } else {
+            [self endFlip];
+        }
+        
     }];
-    if (!suc) {
-        [self endFlip];
-    }
+    
 
 }
 
@@ -1086,9 +1106,8 @@
         switch (flipType) {
             case BookPageFlipAnimationTypeFade:
             {
-                
                 self.pageIsCurled = YES;
-                [TYBookPageTransformAnimation transitionWithType:kCATransitionFade andBlock:^BOOL{
+                [TYBookPageTransformAnimation transitionWithType:kCATransitionFade andBlock:^{
                     BOOL b = [self.delegate XBPageDragViewTurnToChapter:self chapterID:chapterID position:position completion:^(BookPageFlipDirection d){
                         self.pageFlipType = BookPageFlipTypeToNextChapter;
                         
@@ -1098,7 +1117,6 @@
                     if (!b) {
                         [self endFlip];
                     }
-                    return b;
                     
                 } superLayer:self.superview.layer];
             }
