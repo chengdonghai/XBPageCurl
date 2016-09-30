@@ -68,7 +68,7 @@ typedef enum : NSUInteger {
 - (BOOL)XBPageDragViewTurnToNextChapter:(XBPageDragView *)view completion:(void (^)(BOOL suc))completion;
 - (void)XBPageDragViewClickCenter:(XBPageDragView *)view;
 - (void)XBPageDragViewCurlDidEnd:(XBPageDragView *)view curlSuccess:(BOOL)success pageFlipType:(BookPageFlipType)flipType;
--(BOOL)XBPageDragViewTurnToChapter:(XBPageDragView *)view chapterID:(NSInteger)chapterID position:(NSInteger)position completion:(void (^)(BookPageFlipDirection d))completion;
+-(BOOL)XBPageDragViewTurnToChapter:(XBPageDragView *)view chapterID:(NSInteger)chapterID position:(NSInteger)position completion:(void (^)(BookPageFlipDirection d,BOOL success))completion;
 @end
 
 @protocol XBPageDragViewDataSource <NSObject>
