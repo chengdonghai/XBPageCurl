@@ -48,6 +48,9 @@
 @property (nonatomic, strong) TYPoints *points;
 @property (nonatomic) BOOL didInited;
 @property (nonatomic) BOOL isIphone5S;
+@property (nonatomic) CGRect frame;
+@property (nonatomic) CGRect bounds;
+
 @end
 
 @implementation XBPageDragView
@@ -56,8 +59,10 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
+    self = [super init];
     if (self) {
+        self.frame = frame;
+        self.bounds = CGRectMake(0, 0, frame.size.width, frame.size.height);
         [self addObserverForTouch];
         self.points = [[TYPoints alloc]init];
         self.isIphone5S = ([[UIDevice currentDevice].systemVersion floatValue] >= 10.0) ? YES : [[TYXBUtil platformString] isEqualToString:@"iPhone 5S"];
@@ -124,7 +129,7 @@
     NSTimeInterval duration = animated? 0.3: 0;
     __weak XBPageDragView *weakSelf = self;
     [self.pageCurlView setCylinderPosition:self.cornerSnappingPoint.position cylinderAngle:self.cornerSnappingPoint.angle cylinderRadius:self.cornerSnappingPoint.radius animatedWithDuration:duration completion:^{
-        weakSelf.hidden = NO;
+        //weakSelf.hidden = NO;
         weakSelf.pageIsCurled= NO;
         weakSelf.viewToCurl.hidden = NO;
         [weakSelf.pageCurlView removeFromSuperview];
@@ -156,13 +161,13 @@
 
 #pragma mark - Touches
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView
 {
-    
+
     [self.points clearAllPoints];
 
     UITouch *touch = [touches anyObject];
-    CGPoint touchLocation = [touch locationInView:self];
+    CGPoint touchLocation = [touch locationInView:touchedView];
     if (CGRectContainsPoint(self.frame, touchLocation)) {
 
         [self endPreCurl];//结束上一次动画
@@ -184,7 +189,7 @@
     }
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView
 {
     
     if (self.pageIsCurled)
@@ -192,7 +197,7 @@
         return;
     }
     UITouch *touch = [touches anyObject];
-    CGPoint touchLocation = [touch locationInView:self];
+    CGPoint touchLocation = [touch locationInView:touchedView];
     //NSLog(@"touchesMoved:%@",NSStringFromCGPoint(touchLocation));
     [self.points addPoint:touchLocation];
      CGFloat moveX = [self.points movedX];
@@ -353,7 +358,7 @@
 
 
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView
 {
     //NSLog(@"touchesEnded:self.pageIsCurled:%i", self.pageIsCurled);
     if (self.pageIsCurled) {
@@ -361,7 +366,7 @@
     }
     
     UITouch *touch = [touches anyObject];
-    CGPoint touchLocation = [touch locationInView:self];
+    CGPoint touchLocation = [touch locationInView:touchedView];
     [self.points addPoint:touchLocation];
     
     CGFloat moveX = [self.points movedX];
@@ -434,9 +439,9 @@
     
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView
 {
-    [self touchesEnded:touches withEvent:event];
+    [self touchesEnded:touches withEvent:event touchedView:touchedView];
 }
 
 -(void)cureViewToEndLocation:(CGPoint)touchLocation
@@ -551,7 +556,7 @@
 
 -(void)pageCurlViewDidSnapToPoint:(BOOL)success
 {
-    self.hidden = NO;
+    //self.hidden = NO;
     [self endFlip];
     self.viewToCurl.hidden = NO;
     [self.pageCurlView stopAnimating];
@@ -585,7 +590,7 @@
     //_viewToCurl = targetView;
     [self.pageCurlView curlView:targetView cylinderPosition:cylinderPosition startPosition:startPosition cylinderAngle:M_PI_2 cylinderRadius:kRaduis animatedWithDuration:kDuration completion:^{
         //[weakself.cellContentView removeTempViewToContentView];
-        weakself.hidden = NO;
+     //   weakself.hidden = NO;
        // NSLog(@"curlAction end");
         weakself.viewToCurl.hidden = NO;
         [weakself.delegate XBPageDragViewCurlDidEnd:self curlSuccess:YES  pageFlipType:self.pageFlipType];

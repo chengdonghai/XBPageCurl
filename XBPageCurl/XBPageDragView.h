@@ -34,7 +34,7 @@ typedef enum : NSUInteger {
 @protocol XBPageDragViewDataSource;
 @protocol XBPageDragViewDelegate;
 
-@interface XBPageDragView : UIView
+@interface XBPageDragView : NSObject
 
 @property (nonatomic, strong) UIView *viewToCurl;
 @property (nonatomic, readonly) BOOL pageIsCurled;
@@ -42,6 +42,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) XBSnappingPoint *cornerSnappingPoint;
 @property (nonatomic, assign) id<XBPageDragViewDelegate> delegate;
 @property (nonatomic, assign) id<XBPageDragViewDataSource> dataSource;
+@property (nonatomic, assign) UIView *superview;
+
+- (instancetype)initWithFrame:(CGRect)frame;
 
 - (void)uncurlPageAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (void)refreshPageCurlView;
@@ -52,6 +55,12 @@ typedef enum : NSUInteger {
 - (void)turnToPreChapter;
 - (void)turnToPreChapter:(BookPageFlipAnimationType)flipType;
 - (void)turnToChapter:(NSInteger)chapterID position:(NSInteger)position;
+
+#pragma mark - touches
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView;
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView;
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView;
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView;
 
 @end
 
