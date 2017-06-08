@@ -177,24 +177,24 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     return YES;
 }
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay
 {
-    return [self initWithFrame:frame antialiasing:NO];
+    return [self initWithFrame:frame readInDay:readInDay antialiasing:NO];
 }
 
-- (id)initWithFrame:(CGRect)frame antialiasing:(BOOL)antialiasing;
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay antialiasing:(BOOL)antialiasing;
 {
-    return [self initWithFrame:frame horizontalResolution:(NSUInteger)(frame.size.width/10) verticalResolution:(NSUInteger)(frame.size.height/10) antialiasing:antialiasing];
+    return [self initWithFrame:frame readInDay:readInDay horizontalResolution:(NSUInteger)(frame.size.width/10) verticalResolution:(NSUInteger)(frame.size.height/10) antialiasing:antialiasing];
 }
 
-- (id)initWithFrame:(CGRect)frame horizontalResolution:(NSUInteger)horizontalResolution verticalResolution:(NSUInteger)verticalResolution antialiasing:(BOOL)antialiasing
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay horizontalResolution:(NSUInteger)horizontalResolution verticalResolution:(NSUInteger)verticalResolution antialiasing:(BOOL)antialiasing
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _readInDay = readInDay;
         _antialiasing = antialiasing;
         _horizontalResolution = horizontalResolution;
         _verticalResolution = verticalResolution;
-        self.backgroundColor =[UIColor orangeColor];
         if (![self initialize]) {
             return nil;
         }
@@ -1051,8 +1051,12 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
 
 - (void)createBackGradientTexture
 {
-   // NSString *path =  [[NSBundle mainBundle] pathForResource:@"BackPageGradient" ofType:@"png"];
-    UIImage *backPageImage = [UIImage imageNamed:@"BackPageGradient.png"];//[[UIImage alloc] initWithContentsOfFile:path];
+    UIImage *backPageImage = nil;
+    if (self.readInDay) {
+         backPageImage = [UIImage imageNamed:@"BackPageGradient"];
+    } else {
+         backPageImage = [UIImage imageNamed:@"BackPageGradient_night"];
+    }
     backGradientTexture = [self generateTexture];
     
     glActiveTexture(GL_TEXTURE1);

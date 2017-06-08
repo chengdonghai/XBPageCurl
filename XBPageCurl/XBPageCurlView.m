@@ -21,9 +21,9 @@
 
 @implementation XBPageCurlView
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:frame readInDay:readInDay];
     if (self) {
         self.snappingPointArray = [[NSMutableArray alloc] init];
         self.snappingEnabled = NO;

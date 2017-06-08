@@ -43,8 +43,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) id<XBPageDragViewDelegate> delegate;
 @property (nonatomic, assign) id<XBPageDragViewDataSource> dataSource;
 @property (nonatomic, assign) UIView *superview;
+@property (nonatomic, assign) BOOL readInDay;
 
-- (instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay;
 
 - (void)uncurlPageAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (void)refreshPageCurlView;

@@ -25,6 +25,7 @@
 @property (nonatomic, assign) CGPoint cylinderPosition;
 @property (nonatomic, assign) CGFloat cylinderAngle;
 @property (nonatomic, assign) CGFloat cylinderRadius;
+@property (nonatomic, assign) BOOL readInDay;
 
 /**
  * Initializers
@@ -32,9 +33,9 @@
  * page mesh should have. By default, it has 1/10th of the view size, which is good enough for most situations. You should only 
  * use a higher resolution if your cylinder radius goes under ~20.
  */
-- (id)initWithFrame:(CGRect)frame;
-- (id)initWithFrame:(CGRect)frame antialiasing:(BOOL)antialiasing;
-- (id)initWithFrame:(CGRect)frame horizontalResolution:(NSUInteger)horizontalResolution verticalResolution:(NSUInteger)verticalResolution antialiasing:(BOOL)antialiasing;
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay;
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay antialiasing:(BOOL)antialiasing;
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay horizontalResolution:(NSUInteger)horizontalResolution verticalResolution:(NSUInteger)verticalResolution antialiasing:(BOOL)antialiasing;
 
 /**
  * The following set of methods allows you to set the cylinder properties, namely, the (x,y) position of its axis,

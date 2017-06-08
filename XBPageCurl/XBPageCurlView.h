@@ -32,6 +32,7 @@
 - (void)addSnappingPointsFromArray:(NSArray *)snappingPoints;
 - (void)removeSnappingPoint:(XBSnappingPoint *)snappingPoint;
 - (void)removeAllSnappingPoints;
+- (id)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay;
 
 @end
 

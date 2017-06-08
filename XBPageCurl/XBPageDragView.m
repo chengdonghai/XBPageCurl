@@ -57,20 +57,28 @@
 
 @synthesize cornerSnappingPoint = _cornerSnappingPoint;
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)initWithFrame:(CGRect)frame readInDay:(BOOL)readInDay
 {
     self = [super init];
     if (self) {
+        
+        _readInDay = readInDay;
         self.frame = frame;
         self.bounds = CGRectMake(0, 0, frame.size.width, frame.size.height);
         [self addObserverForTouch];
         self.points = [[TYPoints alloc]init];
         self.isIphone5S = ([[UIDevice currentDevice].systemVersion floatValue] >= 10.0) ? YES : [[TYXBUtil platformString] isEqualToString:@"iPhone 5S"];
         if (!self.isIphone5S) {
-           self.pageCurlView = [[XBPageCurlView alloc] initWithFrame:self.bounds];
+           self.pageCurlView = [[XBPageCurlView alloc] initWithFrame:self.bounds readInDay:_readInDay];
         }
     }
     return self;
+}
+
+-(void)setReadInDay:(BOOL)readInDay
+{
+    _readInDay = readInDay;
+    self.pageCurlView.readInDay = readInDay;
 }
 
 -(TYMoveTransformAnimation *)moveAnimation
@@ -143,7 +151,7 @@
 - (void)refreshPageCurlView
 {
     if (self.isIphone5S) {
-        self.pageCurlView = [[XBPageCurlView alloc] initWithFrame:self.bounds];
+        self.pageCurlView = [[XBPageCurlView alloc] initWithFrame:self.bounds readInDay:self.readInDay];
     }
     
     self.pageCurlView.cylinderPosition = self.cornerSnappingPoint.position;
@@ -936,7 +944,11 @@
 
 -(void)addShadowForView:(UIView *)contentView
 {
-    contentView.layer.shadowColor = [UIColor grayColor].CGColor;
+    if (self.readInDay) {
+        contentView.layer.shadowColor = [UIColor grayColor].CGColor;
+    } else {
+        contentView.layer.shadowColor = [UIColor blackColor].CGColor;
+    }
     contentView.layer.shadowOffset = CGSizeMake(5, 0);
     contentView.layer.shadowOpacity = 0.7;
 }
