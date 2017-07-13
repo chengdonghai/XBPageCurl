@@ -155,10 +155,11 @@
         
         [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewWillSnapToPointNotification object:self userInfo:@{kXBSnappingPointKey: closestSnappingPoint}];
         CGPoint endPosition = success?closestSnappingPoint.position:closestSnappingPoint.failPosition;
-        __weak XBPageCurlView *weakSelf = self;
+        //__weak XBPageCurlView *weakSelf = self;
         CGFloat angle = CLAMP(closestSnappingPoint.angle, self.minimumCylinderAngle, self.maximumCylinderAngle);
         [self setCylinderPosition:endPosition cylinderAngle:angle cylinderRadius:closestSnappingPoint.radius animatedWithDuration:kDuration completion:^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewDidSnapToPointNotification object:weakSelf userInfo:@{kXBSnappingPointKey: closestSnappingPoint,kXBCurlSuccessKey: @(success)}];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:XBPageCurlViewDidSnapToPointNotification object:nil userInfo:@{kXBSnappingPointKey: closestSnappingPoint,kXBCurlSuccessKey: @(success)}];
         }];
     }
 }

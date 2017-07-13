@@ -159,12 +159,12 @@
     self.pageCurlView.cylinderRadius = self.cornerSnappingPoint.radius;
     XBPageCurlView *pageCurlView = self.pageCurlView;//[[XBPageCurlView alloc] initWithFrame:self.viewToCurl.frame];
     pageCurlView.pageOpaque = YES;
-    pageCurlView.opaque = NO;
+    //pageCurlView.opaque = NO;
     pageCurlView.snappingEnabled = YES;
     [pageCurlView drawViewOnFrontOfPage:self.viewToCurl];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:XBPageCurlViewDidSnapToPointNotification object:pageCurlView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageCurlViewDidSnapToPointNotification:) name:XBPageCurlViewDidSnapToPointNotification object:pageCurlView];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:XBPageCurlViewDidSnapToPointNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageCurlViewDidSnapToPointNotification:) name:XBPageCurlViewDidSnapToPointNotification object:nil];
 }
 
 #pragma mark - Touches
@@ -560,6 +560,7 @@
 {
     NSNumber *curlSuccess = notification.userInfo[kXBCurlSuccessKey];
     [self pageCurlViewDidSnapToPoint:curlSuccess.boolValue];
+    //NSLog(@"pageCurlViewDidSnapToPointNotification:%@",obj);
 }
 
 -(void)pageCurlViewDidSnapToPoint:(BOOL)success
@@ -569,8 +570,11 @@
     self.viewToCurl.hidden = NO;
     [self.pageCurlView stopAnimating];
     [self.pageCurlView removeFromSuperview];
-
-    [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:success  pageFlipType:self.pageFlipType];
+    if (self.delegate &&
+        [self.delegate conformsToProtocol:@protocol(XBPageDragViewDelegate)] &&
+        [self.delegate respondsToSelector:@selector(XBPageDragViewCurlDidEnd:curlSuccess:pageFlipType:)]) {
+        [self.delegate XBPageDragViewCurlDidEnd:self curlSuccess:success  pageFlipType:self.pageFlipType];
+    }
 }
 
 - (void)curlAction:(BOOL)next tapPoint:(CGPoint)tapPoint
@@ -616,9 +620,7 @@
 
 {    
     
- 
-    
-    
+     
     self.viewToCurl = targetView;
     
     self.pageCurlView.maximumCylinderAngle = maxAngle;

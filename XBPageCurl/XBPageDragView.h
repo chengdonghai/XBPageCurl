@@ -40,8 +40,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) BOOL pageIsCurled;
 @property (nonatomic, strong) XBPageCurlView *pageCurlView;
 @property (nonatomic, readonly) XBSnappingPoint *cornerSnappingPoint;
-@property (nonatomic, assign) id<XBPageDragViewDelegate> delegate;
-@property (nonatomic, assign) id<XBPageDragViewDataSource> dataSource;
+@property (nonatomic, weak) id<XBPageDragViewDelegate> delegate;
+@property (nonatomic, weak) id<XBPageDragViewDataSource> dataSource;
 @property (nonatomic, assign) UIView *superview;
 @property (nonatomic, assign) BOOL readInDay;
 

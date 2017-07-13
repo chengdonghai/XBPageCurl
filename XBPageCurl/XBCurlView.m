@@ -126,9 +126,9 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     [self setContentScaleFactor:self.screenScale];
     
     self.pageOpaque = YES;
-    self.opaque = YES;
+    [super setOpaque:NO];
     CAEAGLLayer *layer = (CAEAGLLayer *)self.layer;
-    layer.opaque = YES;
+    layer.opaque = NO;
     layer.backgroundColor = [UIColor clearColor].CGColor;
     layer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:NO], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
     
@@ -137,7 +137,8 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     if (self.context == nil || [EAGLContext setCurrentContext:self.context] == NO) {
         return NO;
     }
-    
+    //self.opaque = NO;
+
     self.animationManager = [[XBAnimationManager alloc] init];
 
     self.cylinderPosition = CGPointMake(self.bounds.size.width, self.bounds.size.height/2);
@@ -439,7 +440,9 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glViewport(0, 0, viewportWidth, viewportHeight);
-    self.backgroundColor = [UIColor clearColor];
+    //self.backgroundColor = [UIColor clearColor];
+    glClearColor(1, 1, 1, self.opaque? 1.0: 0.0);
+
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     
     glUseProgram(frontProgram);
