@@ -205,6 +205,17 @@ void ImageProviderReleaseData(void *info, const void *data, size_t size);
     return self;
 }
 
++(void)ty_removeCache
+{
+    NSHTTPCookie *cookie;
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+}
 - (void)dealloc
 {
     [EAGLContext setCurrentContext:self.context];

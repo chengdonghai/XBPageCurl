@@ -89,11 +89,26 @@
     return _moveAnimation;
 }
 
++(void)ty_removeCache
+{
+    NSHTTPCookie *cookie;
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+}
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self.pageCurlView stopAnimating];
     
+}
+-(void)clearCurlView
+{
+    _viewToCurl = nil;
 }
 
 -(void)initViewToCurl
@@ -163,8 +178,8 @@
     pageCurlView.snappingEnabled = YES;
     [pageCurlView drawViewOnFrontOfPage:self.viewToCurl];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:XBPageCurlViewDidSnapToPointNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageCurlViewDidSnapToPointNotification:) name:XBPageCurlViewDidSnapToPointNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:XBPageCurlViewDidSnapToPointNotification object:pageCurlView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(pageCurlViewDidSnapToPointNotification:) name:XBPageCurlViewDidSnapToPointNotification object:pageCurlView];
 }
 
 #pragma mark - Touches
@@ -229,7 +244,6 @@
                         [self addShadowForView:targetView];
                         [self.moveAnimation moveTargetView:targetView moveLength:moveX duration:kMoveDuration animated:NO];
                         self.curlViewDidLoad = YES;
-                        
                     } else if ([self.dataSource XBPageDragViewHasNextChapter:self]) {
                         [self.delegate XBPageDragViewTurnToNextChapter:self completion:^(BOOL suc){
                             if (suc) {
@@ -365,10 +379,10 @@
 }
 
 
-
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView
 {
-    //NSLog(@"touchesEnded:self.pageIsCurled:%i", self.pageIsCurled);
+
+    
     if (self.pageIsCurled) {
         return;
     }
@@ -449,7 +463,31 @@
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event touchedView:(UIView *)touchedView
 {
-    [self touchesEnded:touches withEvent:event touchedView:touchedView];
+    [self.points clearAllPoints];
+    switch ([self.dataSource XBPageDragViewPageFlipAnimationType:self]) {
+        case BookPageFlipAnimationTypeFade:
+        {
+            
+            [self endFlip];
+            
+        }
+            break;
+        case BookPageFlipAnimationTypeMove:
+        case BookPageFlipAnimationTypeSimulation:
+        {
+            self.curlViewDidEnd = YES;
+        }
+            break;
+        case BookPageFlipAnimationTypeOther:
+        {
+            [self endFlip];
+        }
+            break;
+        default:
+            [self endFlip];
+            break;
+    }
+    
 }
 
 -(void)cureViewToEndLocation:(CGPoint)touchLocation

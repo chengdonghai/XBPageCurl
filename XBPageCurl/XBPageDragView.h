@@ -50,6 +50,7 @@ typedef enum : NSUInteger {
 - (void)uncurlPageAnimated:(BOOL)animated completion:(void (^)(void))completion;
 - (void)refreshPageCurlView;
 - (void)initViewToCurl;
+- (void)clearCurlView;
 
 - (void)turnToNextChapter;
 - (void)turnToNextChapter:(BookPageFlipAnimationType)flipType;
